@@ -641,6 +641,22 @@ static PyObject * THPModule_are_vmap_fallback_warnings_enabled(PyObject* _unused
   END_HANDLE_TH_ERRORS
 }
 
+PyObject *THPModule_setDeterministicDataLoader(PyObject *_unused, PyObject *arg)
+{
+  THPUtils_assert(PyBool_Check(arg), "set_deterministic expects a "
+          "bool, but got %s", THPUtils_typename(arg));
+  at::globalContext().setDeterministicDataLoader(arg == Py_True);
+  Py_RETURN_NONE;
+}
+
+PyObject *THPModule_deterministicDataLoader(PyObject *_unused, PyObject *noargs)
+{
+  if (at::globalContext().deterministicDataLoader()) {
+        Py_RETURN_TRUE;
+  }
+  Py_RETURN_FALSE;
+}
+
 //NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays)
 static PyMethodDef TorchMethods[] = {
   {"_initExtension",  THPModule_initExtension,   METH_O,       nullptr},
@@ -701,6 +717,8 @@ static PyMethodDef TorchMethods[] = {
   {"_has_torch_function", THPModule_has_torch_function, METH_O, nullptr},
   {"_has_torch_function_unary", THPModule_has_torch_function_unary, METH_O, nullptr},
   {"_has_torch_function_variadic", MAYBE_WRAP_FASTCALL(THPModule_has_torch_function_variadic), MAYBE_METH_FASTCALL, nullptr},
+  {"_get_deterministic_dataloader", THPModule_deterministicDataLoader, METH_NOARGS, nullptr},
+  {"_set_deterministic_dataloader", THPModule_setDeterministicDataLoader, METH_O, nullptr},
   {nullptr, nullptr, 0, nullptr}
 };
 

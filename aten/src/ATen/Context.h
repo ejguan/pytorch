@@ -205,6 +205,9 @@ class TORCH_API Context {
   void setDefaultMobileCPUAllocator();
   void unsetDefaultMobileCPUAllocator();
 
+  void setDeterministicDataLoader(bool);
+  bool deterministicDataLoader() const;
+
  private:
   void initCUDAIfNeeded(DeviceType p) {
     if (p == DeviceType::CUDA) {
@@ -222,6 +225,7 @@ class TORCH_API Context {
   bool enabled_cudnn = true;
   bool deterministic_cudnn = false;
   bool _deterministic_algorithms = false;
+  bool _deterministic_dataloader = false;
   bool benchmark_cudnn = false;
   bool allow_tf32_cudnn = true;
   bool allow_tf32_cublas = true;

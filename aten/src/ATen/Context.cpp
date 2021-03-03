@@ -284,4 +284,17 @@ void Context::unsetDefaultMobileCPUAllocator() {
   c10::SetCPUAllocator(prev_allocator_ptr_ , /*priority*/ 100);
   prev_allocator_ptr_ = nullptr;
 }
+
+bool Context::deterministicDataLoader() const {
+  return _deterministic_dataloader;
+}
+
+void Context::setDeterministicDataLoader(bool b) {
+  if (b) {
+    TORCH_WARN_ONCE("torch.utils.dataloader.set_deterministic is in experiment, and its design and"
+      " functionality may change in the future.");
+  }
+
+  _deterministic_dataloader = b;
+}
 } // namespace at
