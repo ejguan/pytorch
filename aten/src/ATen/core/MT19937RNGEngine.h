@@ -8,6 +8,7 @@
 #include <math.h>
 #endif
 
+#include <ATen/core/RNGEngine.h>
 #include <stdint.h>
 #include <cmath>
 #include <array>
@@ -105,7 +106,7 @@ struct mt19937_data_pod {
   std::array<uint32_t, MERSENNE_STATE_N> state_;
 };
 
-class mt19937_engine {
+class mt19937_engine: public at::rng_engine {
 public:
 
   inline explicit mt19937_engine(uint64_t seed = 5489) {
@@ -124,7 +125,7 @@ public:
     return data_.seed_;
   }
 
-  inline bool is_valid() {
+  inline bool is_valid() const {
     if ((data_.seeded_ == true)
       && (data_.left_ > 0 && data_.left_ <= MERSENNE_STATE_N)
       && (data_.next_ <= MERSENNE_STATE_N)) {

@@ -255,3 +255,36 @@ TEST(CPUGeneratorImpl, TestMT19937EngineReproducibility) {
   }
 
 }
+
+/**
+ * Threefry Tests
+ */
+
+TEST(CPUGeneratorImpl, TestThreefryResult) {
+  // Test against official threefry results
+  struct testcase {
+    const uint64_t seed;
+    const uint64_t result[2][5];
+  };
+  const testcase tc[4] = {
+    {0x0000000012345678,
+      {{0xd1a36433c50b32e2, 0x4449918a72d80ba3, 0x86ff6a8b003abcbb, 0xb2dbc94d54adf6c0, 0x94179ab6149a814e},
+       {0xeaf88842933716b2, 0x6d367d0e5acb9d2b, 0x5dda8064c59fa905, 0x7598cb84f0c57030, 0xc69bce2cb1adda14}}},
+    {0x0000000090abcdef,
+      {{0x2a4adcc866edceae, 0x34efae7a2003ae27, 0x87e3708d2b6d0c7c, 0xb11e9a0871f73204, 0x6eac24f60c31e51f},
+       {0xd6b3672b8faa837e, 0x76b1043a4b41412c, 0xa535e0ca8fef3cc0, 0xa3edee3ac2b830ab, 0x4abbd084a6418ae6}}},
+    {0x1111111122222222,
+      {{0x921c87cfdb183535, 0x31d40558c97f903, 0x76cca1b0723233ec, 0x25a6ef3b7b04feea, 0x7073dd8308112dd0},
+       {0xbf26adbb04f8a56e, 0x4eb12c02bc5a1a13, 0xa5f0a27553fde004, 0x538fbcbc4e235dae, 0x959d9d6a603f639f}}},
+    {0x1234567890abcdef,
+      {{0x148060ff854c53, 0xb98fd46e6c273505, 0xcd4a8b0f8d92e57d, 0xb1605ee630be5126, 0x4f2e9d9d38ea9fe2},
+       {0xb098ccc51fb10d47, 0x25fffbcf52871b40, 0xdde41f1e502b8f06, 0xfc053176682e7e29, 0xa79e80c7ebf5968c}}},
+  };
+  for (int i = 0; i < 2; i++) {
+    auto seed = tc[i].seed;
+    for (int ctr = 0; ctr < 5; ctr++) {
+      ASSERT_EQ(at::detail::threefry(seed, ctr+1, 0), tc[i].result[0][ctr]);
+      ASSERT_EQ(at::detail::threefry(seed, 0, ctr+1), tc[i].result[1][ctr]);
+    }
+  }
+}
